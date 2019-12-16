@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -16,7 +17,6 @@ public class CharacterMovement : MonoBehaviour
     private bool isWalled;
     public Animator animator;
     private Vector2 screenBounds;
-
 
     void Start()
     {
@@ -94,6 +94,13 @@ public class CharacterMovement : MonoBehaviour
         {
             isWalled = true;
         }
+        else if (collision.collider.CompareTag("enemy"))
+        {
+            m_Rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+            
+            animator.SetBool("dead", true);
+            StartCoroutine("Dead");
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -106,8 +113,15 @@ public class CharacterMovement : MonoBehaviour
         {
             isWalled = false;
         }
+        
     }
 
+    IEnumerator Dead()
+    {
+        float waitTime = animator.GetCurrentAnimatorStateInfo(0).length;
+        yield return new WaitForSeconds(waitTime);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
 
 }

@@ -9,7 +9,10 @@ public class CharacterMovement : MonoBehaviour
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;           
     float horizontalMove = 0f;
     public float runSpeed = 40f;
-    bool jump = false;
+    public float dashSpeed = 50f;
+    public int cooldown = 4;
+    private bool jump = false;
+    private bool dash = false;
     private Rigidbody2D m_Rigidbody2D;
     private bool m_FacingRight = true;
     private Vector3 m_Velocity = Vector3.zero;
@@ -17,6 +20,7 @@ public class CharacterMovement : MonoBehaviour
     private bool isWalled;
     public Animator animator;
     private Vector2 screenBounds;
+    private bool canDash = true;
 
     void Start()
     {
@@ -39,6 +43,13 @@ public class CharacterMovement : MonoBehaviour
             }
             
 
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            if (canDash)
+            {
+                dash = true;
+            }
         }
     }
 
@@ -64,15 +75,31 @@ public class CharacterMovement : MonoBehaviour
 
         if (jump)
         {
+            
             if (isGrounded)
             {
+                animator.SetTrigger("jump");
                 m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
 
             }else if (isWalled)
             {
+                animator.SetTrigger("jump");
                 m_Rigidbody2D.AddForce(new Vector2(Input.GetAxisRaw("Horizontal") * runSpeed * 10, m_JumpForce));
             }
 
+        }
+        if (dash)
+        {
+            if (m_FacingRight)
+            {
+                m_Rigidbody2D.velocity = new Vector2(dashSpeed, 0);
+            }else if (!m_FacingRight)
+            {
+                m_Rigidbody2D.velocity = new Vector2(-dashSpeed, 0);
+            }
+            dash = false;
+            canDash = false;
+            StartCoroutine(DashTimer());
         }
     }
 
@@ -97,8 +124,8 @@ public class CharacterMovement : MonoBehaviour
         else if (collision.collider.CompareTag("enemy"))
         {
             m_Rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
-            
-            animator.SetBool("dead", true);
+
+            animator.SetTrigger("dead");
             StartCoroutine("Dead");
         }
     }
@@ -121,6 +148,12 @@ public class CharacterMovement : MonoBehaviour
         float waitTime = animator.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(waitTime);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private IEnumerator DashTimer()
+    {
+        yield return new WaitForSeconds(cooldown);
+        canDash = true;
     }
 
 

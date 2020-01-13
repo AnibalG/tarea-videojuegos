@@ -21,6 +21,7 @@ public class CharacterMovement : MonoBehaviour
     public Animator animator;
     private Vector2 screenBounds;
     private bool canDash = true;
+    private bool grabbed = false;
 
     void Start()
     {
@@ -128,6 +129,14 @@ public class CharacterMovement : MonoBehaviour
             animator.SetTrigger("dead");
             StartCoroutine("Dead");
         }
+        else if (collision.collider.CompareTag("grabbable"))
+        {
+            grabbed = true;
+            m_Rigidbody2D.constraints = RigidbodyConstraints2D.FreezePositionY;
+            transform.SetParent(collision.gameObject.transform, true);
+
+            
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -140,7 +149,18 @@ public class CharacterMovement : MonoBehaviour
         {
             isWalled = false;
         }
-        
+
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "grabbable")
+        {
+            grabbed = true;
+            m_Rigidbody2D.constraints = RigidbodyConstraints2D.FreezePositionY;
+            transform.SetParent(collision.gameObject.transform, true);
+
+
+        }
     }
 
     IEnumerator Dead()

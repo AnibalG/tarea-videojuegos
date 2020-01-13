@@ -8,6 +8,8 @@ TagManager:
   - walls
   - limit
   - enemy
+  - bird
+  - grabbable
   layers:
   - Default
   - TransparentFX

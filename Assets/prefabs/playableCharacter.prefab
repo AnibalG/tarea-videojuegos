@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: 1941659415027393992}
   - component: {fileID: 1941659415027393993}
   - component: {fileID: 1941659415027393994}
-  - component: {fileID: 1941659415027393995}
   - component: {fileID: 1941659415027393996}
-  - component: {fileID: 3491943137231240905}
+  - component: {fileID: 2355393251304570906}
   m_Layer: 0
   m_Name: playableCharacter
   m_TagString: Player
@@ -122,22 +121,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &1941659415027393995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1941659415027393997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f10a5ac985fd4284baa15f67dc92fa8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_JumpForce: 500
-  m_MovementSmoothing: 0.05
-  runSpeed: 35
-  animator: {fileID: 1941659415027393996}
 --- !u!95 &1941659415027393996
 Animator:
   serializedVersion: 3
@@ -157,7 +140,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3491943137231240905
+--- !u!114 &2355393251304570906
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,10 +149,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1941659415027393997}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86884824d38bb0045a53626c216891ef, type: 3}
+  m_Script: {fileID: 11500000, guid: f10a5ac985fd4284baa15f67dc92fa8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dashState: 0
-  dashTimer: 3
-  maxDash: 20
-  savedVelocity: {x: 0, y: 0}
+  m_JumpForce: 450
+  m_MovementSmoothing: 0.05
+  runSpeed: 40
+  dashSpeed: 50
+  cooldown: 4
+  animator: {fileID: 1941659415027393996}

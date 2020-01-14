@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class CharacterMovement : MonoBehaviour
 {
-    [SerializeField] private float m_JumpForce = 400f;        
+    [SerializeField] private float m_JumpForce = 450f;        
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;           
     float horizontalMove = 0f;
     public float runSpeed = 40f;
@@ -22,6 +22,7 @@ public class CharacterMovement : MonoBehaviour
     private Vector2 screenBounds;
     private bool canDash = true;
     private bool grabbed = false;
+    int col = 0;
 
     void Start()
     {
@@ -37,6 +38,7 @@ public class CharacterMovement : MonoBehaviour
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
         animator.SetFloat("speed", Mathf.Abs(horizontalMove));
+        
         if (Input.GetButtonDown("Jump"))
         {
             if (isGrounded || isWalled) {
@@ -50,6 +52,18 @@ public class CharacterMovement : MonoBehaviour
             if (canDash)
             {
                 dash = true;
+            }
+        }
+        if (m_Rigidbody2D.velocity.y < 0)
+        {
+            if (isWalled)
+            {
+                m_Rigidbody2D.velocity -= Vector2.up * Physics2D.gravity.y * 0.3f * Time.deltaTime;
+            }
+            else
+            {
+                m_Rigidbody2D.velocity += Vector2.up * Physics2D.gravity.y * (5f) * Time.deltaTime;
+
             }
         }
     }
@@ -76,18 +90,27 @@ public class CharacterMovement : MonoBehaviour
 
         if (jump)
         {
-            
+
             if (isGrounded)
             {
                 animator.SetTrigger("jump");
                 m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
 
-            }else if (isWalled)
-            {
-                animator.SetTrigger("jump");
-                m_Rigidbody2D.AddForce(new Vector2(Input.GetAxisRaw("Horizontal") * runSpeed * 10, m_JumpForce));
             }
+            else if (isWalled)
+            {
 
+                if (col > 0)
+                {
+                    m_Rigidbody2D.velocity = new Vector2(20f, 10);
+                    //m_Rigidbody2D.AddForce(new Vector2(-runSpeed * 20, m_JumpForce * 1.2f));
+
+                }
+                else if (col < 0)
+                {
+                    m_Rigidbody2D.velocity = new Vector2(-20f, 10);
+                }
+            }
         }
         if (dash)
         {
@@ -100,7 +123,7 @@ public class CharacterMovement : MonoBehaviour
             }
             dash = false;
             canDash = false;
-            StartCoroutine(DashTimer());
+            
         }
     }
 
@@ -117,9 +140,21 @@ public class CharacterMovement : MonoBehaviour
         if (collision.collider.CompareTag("ground"))
         {
             isGrounded = true;
+            canDash = true;
         }
         else if (collision.collider.CompareTag("walls"))
         {
+            Vector3 contactPoint = collision.contacts[0].point;
+            Vector3 center = collision.collider.bounds.center;
+
+            if (contactPoint.x > center.x)
+            {
+                col = 1;
+            }
+            else if (contactPoint.x < center.x)
+            {
+                col = -1;
+            }
             isWalled = true;
         }
         else if (collision.collider.CompareTag("enemy"))
@@ -148,6 +183,7 @@ public class CharacterMovement : MonoBehaviour
         else if (collision.collider.CompareTag("walls"))
         {
             isWalled = false;
+            col = 0;
         }
 
     }
@@ -168,12 +204,6 @@ public class CharacterMovement : MonoBehaviour
         float waitTime = animator.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(waitTime);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    private IEnumerator DashTimer()
-    {
-        yield return new WaitForSeconds(cooldown);
-        canDash = true;
     }
 
 

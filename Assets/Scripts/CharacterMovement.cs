@@ -8,8 +8,8 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float m_JumpForce = 450f;        
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;           
     float horizontalMove = 0f;
-    public float runSpeed = 40f;
-    public float dashSpeed = 50f;
+    public float runSpeed = 45f;
+    public float dashSpeed = 55f;
     public int cooldown = 4;
     private bool jump = false;
     private bool dash = false;
@@ -117,9 +117,12 @@ public class CharacterMovement : MonoBehaviour
             if (m_FacingRight)
             {
                 m_Rigidbody2D.velocity = new Vector2(dashSpeed, 0);
+                m_Rigidbody2D.AddForce(new Vector2(5f, 1.2f));
+
             }else if (!m_FacingRight)
             {
                 m_Rigidbody2D.velocity = new Vector2(-dashSpeed, 0);
+                m_Rigidbody2D.AddForce(new Vector2(5f, 1.2f));
             }
             dash = false;
             canDash = false;
